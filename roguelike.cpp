@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define TAM 40
+#define TAM 30
 
 int main()
 {
@@ -40,11 +40,18 @@ int main()
     }
 
     //Posicao inicial do personagem no console
-    int x=1, y=1, ix = 10, iy = 10, vida = 3;
+    int x=1, y=1, ix = 10, iy = 10, vida = 3, movimento = 0;
     
     while(vida> 0){
         ///Posiciona a escrita no iicio do console
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+        movimento = rand() % 4 + 1;
+        switch (movimento){
+            case 1: ix<39 ? ix++ : ix; break;
+            case 2: iy<39 ? iy++ : iy; break;
+            case 3: ix>0 ? ix-- : ix; break;
+            case 4: iy>0 ? iy-- : iy; break;
+        }
 
         for (int i=0;i<TAM;i++){
             for (int j=0;j<TAM;j++){
@@ -52,14 +59,16 @@ int main()
                     revelaMapa[i][j] = true;
                 }
                 if (i == x && j == y){
-                    cout<<char(36);
+                    cout<<char(36)<<char(36);
+                } else if(i == ix && j == iy){
+                    cout<<char(37)<<char(37);
                 } else if (revelaMapa[i][j]==false){
-                    cout<<"-";
+                    cout<<" -";
                 } else if(revelaMapa[i][j]==true){
                     if (mapa[i][j] == 0){
-                        cout<<" ";
+                        cout<<"  ";
                     } else if(mapa[i][j]==1){
-                        cout<<char(219);
+                        cout<<char(219)<<char(219);
                     }
                 }
             }
