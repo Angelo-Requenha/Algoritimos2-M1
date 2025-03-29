@@ -41,9 +41,10 @@ int main()
 
     //Posicao inicial do personagem no console
     int x=1, y=1, ix = 10, iy = 10, vida = 3, movimento = 0;
+    int yProjetil = -1, xProjetil = -1;
     
     while(vida> 0){
-        ///Posiciona a escrita no iicio do console
+        ///Posiciona a escrita no inicio do console
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
         movimento = rand() % 4 + 1;
         switch (movimento){
@@ -58,12 +59,23 @@ int main()
                 if (i > x-5 && i < x+5 && j > y-5 && j < y+5){
                     revelaMapa[i][j] = true;
                 }
+
+                if (xProjetil > 0 && xProjetil < 30){
+                    xProjetil++;
+                }
+
                 if (i == x && j == y){
                     cout<<char(36)<<char(36);
+                    
                 } else if(i == ix && j == iy){
                     cout<<char(37)<<char(37);
+
+                } else if(i == yProjetil and j == xProjetil){
+                    cout<<char(22)<<char(22);
+
                 } else if (revelaMapa[i][j]==false){
                     cout<<" -";
+
                 } else if(revelaMapa[i][j]==true){
                     if (mapa[i][j] == 0){
                         cout<<"  ";
@@ -75,7 +87,9 @@ int main()
             cout<<endl;
         }
 
-        cout<<"Vida: "<<vida;
+        cout<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
+        cout<<"Vida: "<<vida<<endl;
+        cout<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
 
         ///executa os movimentos
          if (_kbhit()) {
@@ -87,6 +101,8 @@ int main()
                 case 80: case 's': novo_x++; break;
                 case 75: case 'a': novo_y--; break;
                 case 77: case 'd': novo_y++; break;
+
+                case 32: xProjetil = y; yProjetil = x;
             }
             
             if (x == ix and y == iy){
