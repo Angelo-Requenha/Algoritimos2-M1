@@ -7,6 +7,8 @@ using namespace std;
 
 #define TAM 40
 
+
+
 int main()
 {
     srand(time(NULL));
