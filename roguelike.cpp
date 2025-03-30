@@ -2,30 +2,29 @@
 #include <windows.h>
 #include <conio.h>
 #include <time.h>
-
 using namespace std;
 
 #define TAM 30
 
 void tirarCursorDaTela(){
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_CURSOR_INFO     cursorInfo;
+    CONSOLE_CURSOR_INFO cursorInfo;
     GetConsoleCursorInfo(out, &cursorInfo);
     cursorInfo.bVisible = false; // set the cursor visibility
     SetConsoleCursorInfo(out, &cursorInfo);
-        
 }
 
 // ====================== Menu ======================
-void Menu(int opcao, const string opcoes[], int totalOpcoes) {
+void menu(int opcao, const string opcoes[], int totalOpcoes) {
     cout << "╔═════ Dungeons and Binaries ═════╗\n";
     cout << "║                                 ║\n";
     // Exibe o menu com a seta
     for (int i = 0; i < totalOpcoes; i++) {
-       if (i == opcao)
+       if (i == opcao) {
           cout << "║      ► "; // Seta para indicar a seleção
-       else
+       } else {
           cout << "║        ";
+       }
 
        cout << opcoes[i] << "\n";
     }
@@ -33,7 +32,7 @@ void Menu(int opcao, const string opcoes[], int totalOpcoes) {
     cout << "╚═════════════════════════════════╝\n";
 }
 
-void ComoJogar() {
+void comoJogar() {
    system("cls");
    cout << "╔═════ Como jogar? ═════╗\n";
    cout << "║                       ║\n";
@@ -48,7 +47,7 @@ void ComoJogar() {
    system("pause");
 }
 
-void Creditos() {
+void creditos() {
    system("cls");
    cout << "╔════════ Créditos ════════╗\n";
    cout << "║                          ║\n";
@@ -58,15 +57,16 @@ void Creditos() {
    cout << "║                          ║\n";
    cout << "║ Professor: Alex Rese     ║\n";
    cout << "║ Feito em: DD/MM/AAAA     ║\n";
+   cout << "║                          ║\n";
    cout << "╚══════════════════════════╝\n";
    system("pause");
 }
 
 // ====================== Mapa ======================
-void criaMapa(int mapa[TAM][TAM]){
-    for (int i=0;i<TAM;i++){
-        for (int j=0;j<TAM;j++){
-            if (i==TAM-TAM || j==TAM-TAM || j==TAM-1 || i ==TAM-1){
+void criarMapa(int mapa[TAM][TAM]) {
+    for (int i = 0; i < TAM; i++) {
+        for (int j = 0; j < TAM; j++) {
+            if (i == TAM-TAM || j == TAM - TAM || j == TAM - 1 || i == TAM - 1) {
                 mapa[i][j] = 1;
             } else{
                 mapa[i][j] = 0;
@@ -75,10 +75,10 @@ void criaMapa(int mapa[TAM][TAM]){
     }
 }
 
-void desenharMapa(bool revelaMapa[TAM][TAM], int mapa[TAM][TAM], int x, int y, int ix, int iy){
+void desenharMapa(bool revelaMapa[TAM][TAM], int mapa[TAM][TAM], int x, int y, int ix, int iy) {
     for (int i = 0; i < TAM; i++) {
-        for (int j=0;j<TAM;j++){
-            if (i > x-5 && i < x+5 && j > y-5 && j < y+5){
+        for (int j=0 ; j < TAM; j++){
+            if (i > x - 5 && i < x + 5 && j > y - 5 && j < y + 5){
                 revelaMapa[i][j] = true;
             }
 
@@ -92,18 +92,18 @@ void desenharMapa(bool revelaMapa[TAM][TAM], int mapa[TAM][TAM], int x, int y, i
                 if (mapa[i][j] == 0){
                     cout<<"  "; // Espaço vazio
                 } else if(mapa[i][j] == 1) {
-                    cout<< char(219) << char(219); // Parede
+                    cout<< "█" << "█"; // Parede char(219)
                 }
             }
         }
-        cout<<endl;
+        cout<< endl;
     }
 }
 
 void hud(int vida) {
-    cout<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
-    cout<<"Vida: " << vida << endl;
-    cout<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
+    cout<< "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
+    cout<< "Vida: " << vida << endl;
+    cout<< "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
 }
 
 // ====================== Movimento ======================
@@ -151,20 +151,22 @@ int main() {
 
     int x = 1, y = 1, ix = 10, iy = 10, vida = 3;
     // int yProjetil = -1, xProjetil = -1;
-    bool revelaMapa[TAM][TAM] = {false};
+    bool revelarMapa[TAM][TAM] = {false};
     int mapa[TAM][TAM];
 
     // Opções do menu
     int opcao = 0; // Índice da opção selecionada
     bool rodando = true;
     const int totalOpcoes = 4;
+    
+    // Matriz de opções começando com o indice de 0
     string opcoes[totalOpcoes] = {"Jogar                    ║", "Como jogar               ║", "Créditos                 ║", "Sair                     ║"};
     
-    criaMapa(mapa);
+    criarMapa(mapa);
 
     while (rodando) {
-        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-        Menu(opcao, opcoes, totalOpcoes);
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord); // Não deixar o menu atualizar
+        menu(opcao, opcoes, totalOpcoes);
 
         char menu = _getch();
 
@@ -186,18 +188,19 @@ int main() {
                     switch(opcao) {
                         case 0:
                             while(vida > 0) {
-                                SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-                    
+                                SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord); // Não deixa o jogo atualizar
                                 movimentoInimigo(ix, iy);
-                                desenharMapa(revelaMapa, mapa, x, y, ix, iy);
+                                desenharMapa(revelarMapa, mapa, x, y, ix, iy);
                                 hud(vida);
                                 movimentoJogador(mapa, x, y, vida, ix, iy);
                             }
                         case 1:
-                            ComoJogar();
+                            comoJogar();
+                            system("cls");
                             break;
                         case 2:
-                            Creditos();
+                            creditos();
+                            system("cls");
                             break;
                         case 3:
                             rodando = false;
