@@ -4,6 +4,9 @@
 #include <time.h>
 using namespace std;
 
+// Importações
+#include "menu.h"
+
 #define TAM 30
 
 void tirarCursorDaTela(){
@@ -30,36 +33,6 @@ void menu(int opcao, const string opcoes[], int totalOpcoes) {
     }
     cout << "║                                 ║\n";
     cout << "╚═════════════════════════════════╝\n";
-}
-
-void comoJogar() {
-   system("cls");
-   cout << "╔═════ Como jogar? ═════╗\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "╚═══════════════════════╝\n";
-   system("pause");
-}
-
-void creditos() {
-   system("cls");
-   cout << "╔════════ Créditos ════════╗\n";
-   cout << "║                          ║\n";
-   cout << "║ - Angelo Miguel Requenha ║\n";
-   cout << "║ - Dinae Pfiffer          ║\n";
-   cout << "║ - Bruno de Queiróz       ║\n";
-   cout << "║                          ║\n";
-   cout << "║ Professor: Alex Rese     ║\n";
-   cout << "║ Feito em: DD/MM/AAAA     ║\n";
-   cout << "║                          ║\n";
-   cout << "╚══════════════════════════╝\n";
-   system("pause");
 }
 
 // ====================== Mapa ======================
@@ -157,29 +130,29 @@ int main() {
     // Opções do menu
     int opcao = 0; // Índice da opção selecionada
     bool rodando = true;
-    const int totalOpcoes = 4;
+    const int totalOpcoes = 6;
     
     // Matriz de opções começando com o indice de 0
-    string opcoes[totalOpcoes] = {"Jogar                    ║", "Como jogar               ║", "Créditos                 ║", "Sair                     ║"};
+    string opcoes[totalOpcoes] = {"Jogar                    ║", "Como jogar               ║", "Itens                    ║","Sistema de Pontuações    ║", "Créditos                 ║","Sair                     ║"};
     
     criarMapa(mapa);
 
     while (rodando) {
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord); // Não deixar o menu atualizar
-        menu(opcao, opcoes, totalOpcoes);
+        menu(opcao, opcoes, totalOpcoes); // Chama a função "menu"
 
         char menu = _getch();
 
         switch(menu) {
             case 72: 
                 case 'w': opcao--;
-                if (opcao == -1) {
+                if (opcao == -1) { // Impede da seta do menu ultrapassar o limite de cima
                     opcao = 3;
                 }
                 break;
             case 80: 
                 case 's': opcao++;
-                if (opcao == 4) {
+                if (opcao == 6) { // Impede da seta do menu ultrapassar o limite de baixo
                     opcao = 0;
                 }
                 break;
@@ -199,10 +172,18 @@ int main() {
                             system("cls");
                             break;
                         case 2:
-                            creditos();
+                            itens();
                             system("cls");
                             break;
                         case 3:
+                            sistemaDePontuacao();
+                            system("cls");
+                            break;
+                        case 4:
+                            creditos();
+                            system("cls");
+                            break;
+                        case 5:
                             rodando = false;
                             break;
                     }
