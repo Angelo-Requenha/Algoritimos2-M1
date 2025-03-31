@@ -1,5 +1,5 @@
-#ifndef menu_h
-#define menu_h
+#ifndef MENU_h
+#define MENU_h
 
 void comoJogar();
 void itens();
