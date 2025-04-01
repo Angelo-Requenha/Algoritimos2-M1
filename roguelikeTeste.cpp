@@ -4,9 +4,12 @@
 #include <time.h>
 using namespace std;
 
+// Importações
+#include "menu.h"
+
 #define TAM 30
 
-void tirarCursorDaTela(){
+void tirarCursorDaTela() {
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_CURSOR_INFO cursorInfo;
     GetConsoleCursorInfo(out, &cursorInfo);
@@ -32,66 +35,6 @@ void menu(int opcao, const string opcoes[], int totalOpcoes) {
     cout << "╚═════════════════════════════════╝\n";
 }
 
-void comoJogar() {
-   system("cls");
-   cout << "╔═════ Como jogar? ═════╗\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "║                       ║\n";
-   cout << "╚═══════════════════════╝\n";
-   system("pause");
-}
-
-void itens() {
-    system("cls");
-    cout << "╔════════ Itens ════════╗\n";
-    cout << "║                       ║\n";
-    cout << "║                       ║\n";
-    cout << "║                       ║\n";
-    cout << "║                       ║\n";
-    cout << "║                       ║\n";
-    cout << "║                       ║\n";
-    cout << "║                       ║\n";
-    cout << "║                       ║\n";
-    cout << "╚═══════════════════════╝\n";
-    system("pause");
- }
-
- void sistemaDePontuacao() {
-    system("cls");
-    cout << "╔════════ Sistema de Pontuação ════════╗\n";
-    cout << "║                                      ║\n";
-    cout << "║                                      ║\n";
-    cout << "║                                      ║\n";
-    cout << "║                                      ║\n";
-    cout << "║                                      ║\n";
-    cout << "║                                      ║\n";
-    cout << "║                                      ║\n";
-    cout << "║                                      ║\n";
-    cout << "╚══════════════════════════════════════╝\n";
-    system("pause");
- }
-
-void creditos() {
-   system("cls");
-   cout << "╔════════ Créditos ════════╗\n";
-   cout << "║                          ║\n";
-   cout << "║ - Angelo Miguel Requenha ║\n";
-   cout << "║ - Dinae Pfiffer          ║\n";
-   cout << "║ - Bruno de Queiróz       ║\n";
-   cout << "║                          ║\n";
-   cout << "║ Professor: Alex Rese     ║\n";
-   cout << "║ Feito em: DD/MM/AAAA     ║\n";
-   cout << "║                          ║\n";
-   cout << "╚══════════════════════════╝\n";
-   system("pause");
-}
-
 // ====================== Mapa ======================
 void criarMapa(int mapa[TAM][TAM]) {
     for (int i = 0; i < TAM; i++) {
@@ -107,18 +50,18 @@ void criarMapa(int mapa[TAM][TAM]) {
 
 void desenharMapa(bool revelaMapa[TAM][TAM], int mapa[TAM][TAM], int x, int y, int ix, int iy) {
     for (int i = 0; i < TAM; i++) {
-        for (int j=0 ; j < TAM; j++){
-            if (i > x - 5 && i < x + 5 && j > y - 5 && j < y + 5){
+        for (int j=0 ; j < TAM; j++) {
+            if (i > x - 5 && i < x + 5 && j > y - 5 && j < y + 5) {
                 revelaMapa[i][j] = true;
             }
 
             if (i == x && j == y) {
                 cout<< char(36) << char(36); // Personagem
-            } else if(i == ix && j == iy) {
+            } else if (i == ix && j == iy) {
                 cout<< char(37) << char(37); // Inimigo
             } else if (revelaMapa[i][j] == false) {
                 cout<< " -"; // Fog
-            } else if(revelaMapa[i][j] == true) {
+            } else if (revelaMapa[i][j] == true) {
                 if (mapa[i][j] == 0){
                     cout<<"  "; // Espaço vazio
                 } else if(mapa[i][j] == 1) {
@@ -136,14 +79,24 @@ void hud(int vida) {
     cout<< "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
 }
 
+// ====================== Structs =======================
+struct Movimento {
+    int x, y;
+};
+
+// struct Personagem {
+//     int x, y;
+//     int vida;
+// };
+
 // ====================== Movimento ======================
-void movimentoInimigo(int &ix, int &iy){
+void movimentoInimigo(Movimento &inimigo) {
     int movimento = rand() % 4 + 1;
-    switch (movimento){
-        case 1: ix<39 ? ix++ : ix; break;
-        case 2: iy<39 ? iy++ : iy; break;
-        case 3: ix>0 ? ix-- : ix; break;
-        case 4: iy>0 ? iy-- : iy; break;
+    switch (movimento) {
+        case 1: inimigo.x < 39 ? inimigo.x++ : inimigo.x; break;
+        case 2: inimigo.y < 39 ? inimigo.y++ : inimigo.y; break;
+        case 3: inimigo.x > 0 ? inimigo.x-- : inimigo.x; break;
+        case 4: inimigo.y > 0 ? inimigo.y-- : inimigo.y; break;
     }
 }
 
@@ -158,7 +111,7 @@ void movimentoJogador(int mapa[TAM][TAM], int &x, int &y, int &vida, int ix, int
             case 77: case 'd': novo_y++; break;
             // case 32: xProjetil = y; yProjetil = x;
         }
-        if (x == ix && y == iy){
+        if (x == ix && y == iy) {
             vida--;
         }
         if (mapa[novo_x][novo_y] == 0) {
@@ -188,11 +141,20 @@ int main() {
     int opcao = 0; // Índice da opção selecionada
     bool rodando = true;
     const int totalOpcoes = 6;
-    
     // Matriz de opções começando com o indice de 0
-    string opcoes[totalOpcoes] = {"Jogar                    ║", "Como jogar               ║", "Itens                    ║","Sistema de Pontuações    ║", "Créditos                 ║","Sair                     ║"};
+    string opcoes[totalOpcoes] = {
+        "Jogar                    ║",
+        "Como jogar               ║",
+        "Itens                    ║",
+        "Sistema de Pontuações    ║",
+        "Créditos                 ║",
+        "Sair                     ║"
+    };
     
     criarMapa(mapa);
+
+    // Configuração das movimentações
+    Movimento inimigo = {1, 1}; // Initialize the enemy's position
 
     while (rodando) {
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord); // Não deixar o menu atualizar
@@ -219,7 +181,7 @@ int main() {
                         case 0:
                             while(vida > 0) {
                                 SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord); // Não deixa o jogo atualizar
-                                movimentoInimigo(ix, iy);
+                                movimentoInimigo(inimigo);
                                 desenharMapa(revelarMapa, mapa, x, y, ix, iy);
                                 hud(vida);
                                 movimentoJogador(mapa, x, y, vida, ix, iy);
