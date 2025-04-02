@@ -79,18 +79,33 @@ void hud(int vida) {
     cout<< "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
 }
 
+// ====================== Structs ======================
+
+// struct Pontos {
+//     int pontos;
+// };
+
+struct Posicao {
+    int x, y;
+};
+
+struct Inimigo {
+    int x, y; // Define a posição inicial do inimigo
+    int vida;
+};
+
 // ====================== Movimento ======================
-void movimentoInimigo(int &ix, int &iy) {
+void movimentoInimigo(Inimigo &inimigo) {
     int movimento = rand() % 4 + 1;
     switch (movimento) {
-        case 1: ix < 39 ? ix++ : ix; break;
-        case 2: iy < 39 ? iy++ : iy; break;
-        case 3: ix > 0 ? ix-- : ix; break;
-        case 4: iy > 0 ? iy-- : iy; break;
+        case 1: inimigo.x < 39 ? inimigo.x++ : inimigo.x; break;
+        case 2: inimigo.y < 39 ? inimigo.y++ : inimigo.y; break;
+        case 3: inimigo.x > 0 ? inimigo.x-- : inimigo.x; break;
+        case 4: inimigo.y > 0 ? inimigo.y-- : inimigo.y; break;
     }
 }
 
-void movimentoJogador(int mapa[TAM][TAM], int &x, int &y, int &vida, int ix, int iy) {
+void movimentoJogador(int mapa[TAM][TAM], int &x, int &y, int &vida, Inimigo inimigo) {
     if (_kbhit()) {
         char tecla = _getch();
         int novo_x = x, novo_y = y;
@@ -101,7 +116,7 @@ void movimentoJogador(int mapa[TAM][TAM], int &x, int &y, int &vida, int ix, int
             case 77: case 'd': novo_y++; break;
             // case 32: xProjetil = y; yProjetil = x;
         }
-        if (x == ix && y == iy) {
+        if (x == inimigo.x && y == inimigo.y) {
             vida--;
         }
         if (vida == 0) {
@@ -151,7 +166,15 @@ int main() {
         "Sair                     ║"
     };
     
+    string opcoesPause[totalOpcoes] = {
+        "Continuar                ║",
+    };
+    
     criarMapa(mapa);
+
+    // Posição inicial
+    //Inimigo inimigo = {5, 5};
+    Inimigo inimigoPosicao = {10, 10};
 
     while (rodando) {
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord); // Não deixar o menu atualizar
@@ -178,10 +201,10 @@ int main() {
                         case 0:
                             while(vida > 0) {
                                 SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord); // Não deixa o jogo atualizar
-                                //movimentoInimigo(ix, iy);
-                                desenharMapa(revelarMapa, mapa, x, y, ix, iy);
+                                movimentoInimigo(inimigoPosicao);
+                                desenharMapa(revelarMapa, mapa, x, y, inimigoPosicao.x, inimigoPosicao.y);
                                 hud(vida);
-                                movimentoJogador(mapa, x, y, vida, ix, iy);
+                                movimentoJogador(mapa, x, y, vida, inimigoPosicao);
                             }
                         case 1:
                             comoJogar();
