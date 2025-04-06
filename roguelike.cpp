@@ -7,6 +7,7 @@ using namespace std;
 
 // === Importações de cabeçalhos ===
 #include "menu.h"
+#include "mapa.h"
 
 #define TAM 30
 
@@ -36,7 +37,6 @@ struct Jogador {
     Item arma;
 };
 
-
 void atirarDireita(int mapa[TAM][TAM], int x, int y, Inimigo &inimigo) {
     for (int i = y + 1; i < TAM; i++) {
         // Parar se encontrar parede
@@ -60,7 +60,6 @@ void atirarDireita(int mapa[TAM][TAM], int x, int y, Inimigo &inimigo) {
     }
 }
 
-
 // === Funções utilitárias ===
 void tirarCursorDaTela() {
     HANDLE out = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -68,31 +67,6 @@ void tirarCursorDaTela() {
     GetConsoleCursorInfo(out, &cursorInfo);
     cursorInfo.bVisible = false;
     SetConsoleCursorInfo(out, &cursorInfo);
-}
-
-// === Funções de mapa ===
-void criarMapa(int mapa[TAM][TAM]) {
-    for (int i = 0; i < TAM; i++) {
-        for (int j = 0; j < TAM; j++) {
-            mapa[i][j] = (i == 0 || j == 0 || i == TAM - 1 || j == TAM - 1) ? 1 : 0;
-        }
-    }
-}
-
-void desenharMapa(bool revelaMapa[TAM][TAM], int mapa[TAM][TAM], int x, int y, int ix, int iy) {
-    for (int i = 0; i < TAM; i++) {
-        for (int j = 0; j < TAM; j++) {
-            if (i > x - 5 && i < x + 5 && j > y - 5 && j < y + 5) {
-                revelaMapa[i][j] = true;
-            }
-
-            if (i == x && j == y) cout << "$$";
-            else if (i == ix && j == iy) cout << "%%";
-            else if (!revelaMapa[i][j]) cout << " -";
-            else cout << (mapa[i][j] == 1 ? "██" : "  ");
-        }
-        cout << endl;
-    }
 }
 
 // === HUD ===
@@ -149,27 +123,18 @@ void movimentoJogador(int mapa[TAM][TAM], int &x, int &y, int &vida, int ix, int
     }
 }
 
-// === Função de Menu ===
-void menu(int opcao, const string opcoes[], int totalOpcoes) {
-    cout << "╔═════ Dungeons and Binaries ═════╗\n";
-    cout << "║                                 ║\n";
-    for (int i = 0; i < totalOpcoes; i++) {
-        cout << "║" << (i == opcao ? "  ► " : "     ") << opcoes[i] << "\n";
-    }
-    cout << "║                                 ║\n";
-    cout << "╚═════════════════════════════════╝\n";
-}
-
 // === Função principal ===
 int main() {
     SetConsoleOutputCP(65001); // UTF-8
     srand(time(NULL));
     tirarCursorDaTela();
 
-    Jogador jogador {{{1,1}, 3, 0, 1}, {"pistola", 3}};
-    Inimigo inimigo {{{10,10}, 5, 3, 1}};
     bool revelarMapa[TAM][TAM] = {};
     int mapa[TAM][TAM];
+
+    Jogador jogador {{{1,1}, 3, 0, 1}, {"pistola", 3}};
+    Inimigo inimigo {{{10,10}, 5, 3, 1}};
+    resetarRevelarMapa(revelarMapa);
     criarMapa(mapa);
 
     // Menu
@@ -197,6 +162,11 @@ int main() {
             case 13: // ENTER
                 switch (opcao) {
                     case 0:
+                        // Reinicia tanto o jogador como o inimigo
+                        jogador = {{{1,1}, 3, 0, 1}, {"pistola", 3}};
+                        inimigo = {{{10,10}, 5, 3, 1}};
+                        resetarRevelarMapa(revelarMapa);
+
                         while (jogador.jogador.vida > 0) {
                             SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
                             movimentoInimigo(inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y);

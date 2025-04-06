@@ -2,6 +2,16 @@
 #include "menu.h"
 using namespace std;
 
+void menu(int opcao, const string opcoes[], int totalOpcoes) {
+   cout << "╔═════ Dungeons and Binaries ═════╗\n";
+   cout << "║                                 ║\n";
+   for (int i = 0; i < totalOpcoes; i++) {
+       cout << "║" << (i == opcao ? "      ► " : "        ") << opcoes[i] << "\n";
+   }
+   cout << "║                                 ║\n";
+   cout << "╚═════════════════════════════════╝\n";
+}
+
 void comoJogar() {
    system("cls");
    cout<< "╔═════ Como jogar? ═════╗\n";
