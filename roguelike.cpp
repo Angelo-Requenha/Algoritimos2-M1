@@ -50,11 +50,13 @@ void tirarCursorDaTela() {
 }
 
 // === HUD ===
-void hud(int vida) {
+
+void hud(int vida, int pontos) {
     cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
-    cout << "Vida: " << vida << endl;
+    cout << "Vida: " << vida << " " << "Pontos: " << pontos << endl;
     cout << "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n";
 }
+
 
 // === Movimento ===
 void movimentoInimigo(int &x, int &y, int mapa[TAM][TAM]) {
@@ -91,7 +93,7 @@ void movimentoBoss(int &x, int &y, int mapa[TAM][TAM]) {
     } 
 }
 
-void movimentoJogador(int mapa[TAM][TAM], int &x, int &y, int &vida, int ix, int iy, int &proj_x, int &proj_y, bool &proj_ativo, int &lado, int &proj_dx, int &proj_dy, bool &mudarFase) {
+void movimentoJogador(int mapa[TAM][TAM], int &x, int &y, int &vida, int ix, int iy, int idano, int bossdano, int bx, int by, int &proj_x, int &proj_y, bool &proj_ativo, int &lado, int &proj_dx, int &proj_dy, bool &mudarFase) {
     if (_kbhit()) {
         char tecla = _getch();
         int novo_x = x, novo_y = y;
@@ -127,8 +129,11 @@ void movimentoJogador(int mapa[TAM][TAM], int &x, int &y, int &vida, int ix, int
                 break;
         }
 
-        if (ix == x && iy == y) {
-            vida--;
+        if (bx == x && by == y) {
+            vida = vida - bossdano;
+        }
+        else if (ix == x && iy == y){
+            vida = vida - idano;
         }
 
         if (vida <= 0) {
@@ -155,18 +160,11 @@ int main() {
 
     bool revelarMapa[TAM][TAM] = {};
     int mapa[TAM][TAM];
-    int lado = 1; // Direção do jogador
-    //int fase = 1;
-    int faseAtual = 1;
+    int lado = 1;
     bool mudarFase = false;
     bool jogoGanho = false;
+    int pontos = 0;
 
-    // Definir: "Posição", "Vida", "XP", "Dano"
-    Jogador jogador {{{1, 1}, 3, 0, 1}};
-    Boss boss {{{20, 20}, 1, 100, 5}};
-    Inimigo inimigo {{{8, 9}, 5, 3, 1}};
-    Projetil projetil = {{-1, -1}, 1, false, 0, 0};
-    
     // Menu
     COORD coord = {0, 0};
     int opcao = 0;
@@ -192,12 +190,16 @@ int main() {
             case 13: // ENTER
                 switch (opcao) {
                     case 0: {
-                        jogador = {{{1,1}, 3, 0, 1}};
+                        // Definir: "Posição", "Vida", "XP", "Dano"
+                        Jogador jogador {{{1, 1}, 3, 0, 1}};
+                        Boss boss {{{20, 20}, 1, 100, 5}};
                         Inimigo inimigo {{{8, 9}, 5, 3, 1}};
+                        Projetil projetil = {{-1, -1}, 1, false, 0, 0};
+                        int faseAtual = 1;
                         resetarRevelarMapa(revelarMapa);
                         criarMapa(mapa, faseAtual);
                         
-                        while (jogador.jogador.vida > 0 || boss.boss.vida > 0) {
+                        while (jogador.jogador.vida > 0) {
                             SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
                         
                             // Movimentação dos Inimigos
@@ -210,8 +212,8 @@ int main() {
                             }
                             
                             int bossX = -1, bossY = -1;
-                            if (faseAtual == 3 && boss.boss.vida > 0) {
-                                 if (boss.boss.vida > 0) {
+                            if (faseAtual == 3) {
+                                if (boss.boss.vida > 0) {
                                     bossX = boss.boss.posicao.x;
                                     bossY = boss.boss.posicao.y;
                                     movimentoInimigo(boss.boss.posicao.x, boss.boss.posicao.y, mapa);
@@ -222,11 +224,10 @@ int main() {
                                     cout << "╚════════════════════════════════════╝\n";
                                     system("pause");
                                     break;
-                                    boss.boss.posicao.x = -1; boss.boss.posicao.y = -1;
                                 }
                                 inimigo.inimigo.posicao.x = -1;
                                 inimigo.inimigo.posicao.y = -1;
-                            } 
+                            }
 
                             if (projetil.ativo && lado != 0) {
                                 projetil.posicao.x += projetil.dx;
@@ -243,6 +244,9 @@ int main() {
                                 if (projetil.posicao.x == inimigo.inimigo.posicao.x &&
                                     projetil.posicao.y == inimigo.inimigo.posicao.y) {
                                     inimigo.inimigo.vida -= projetil.dano;
+                                    if (inimigo.inimigo.vida < 0) {
+                                        pontos += 10;
+                                    }
                                     projetil.ativo = false;
                                     projetil.posicao.y = -1;
                                     projetil.posicao.x = -1;
@@ -251,6 +255,9 @@ int main() {
                                 if (projetil.posicao.x == boss.boss.posicao.x &&
                                     projetil.posicao.y == boss.boss.posicao.y) {
                                     boss.boss.vida -= projetil.dano;
+                                    if (boss.boss.vida < 0) {
+                                        pontos += 20;
+                                    }
                                     projetil.ativo = false;
                                     projetil.posicao.y = -1;
                                     projetil.posicao.x = -1;
@@ -266,10 +273,10 @@ int main() {
                             movimentoJogador(mapa,
                                 jogador.jogador.posicao.x, jogador.jogador.posicao.y,
                                 jogador.jogador.vida,
-                                inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y,
+                                inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y, inimigo.inimigo.dano, boss.boss.dano, boss.boss.posicao.x, boss.boss.posicao.y,
                                 projetil.posicao.x, projetil.posicao.y, projetil.ativo, lado, projetil.dx, projetil.dy, mudarFase);
 
-                            hud(jogador.jogador.vida);
+                            hud(jogador.jogador.vida, pontos);
 
                             // Verifica se o jogador alcançou um portal
                             if (mudarFase) {
@@ -299,7 +306,7 @@ int main() {
                                 continue;
                             }
                         }
-                    }
+                    } system("cls"); break;
                     case 1: comoJogar(); system("cls"); break;
                     case 2: itens(); system("cls"); break;
                     case 3: sistemaDePontuacao(); system("cls"); break;
