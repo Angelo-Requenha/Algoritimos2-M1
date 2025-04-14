@@ -148,15 +148,13 @@ int main() {
     bool revelarMapa[TAM][TAM] = {};
     int mapa[TAM][TAM];
     int lado = 1;
+    int fase = 1;
 
     // Definir: "Posição", "Vida", "XP", "Dano"
     Jogador jogador {{{1, 1}, 3, 0, 1}};
     Inimigo inimigo {{{8, 9}, 5, 3, 1}};
     Boss boss {{{20, 20}, 50, 100, 5}};
     Projetil projetil = {{-1, -1}, 1, false, 0, 0}; 
-
-    resetarRevelarMapa(revelarMapa);
-    criarMapa(mapa);
 
     // Menu
     COORD coord = {0, 0};
@@ -186,51 +184,52 @@ int main() {
                         jogador = {{{1,1}, 3, 0, 1}};
                         inimigo = {{{10,10}, 5, 3, 1}};
                         resetarRevelarMapa(revelarMapa);
-
-                        while (jogador.jogador.vida > 0) {
-                            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-
-                            // Movimentação dos Inimigos
-                            if (inimigo.inimigo.vida > 0) movimentoInimigo(inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y, mapa);
-                            else {inimigo.inimigo.posicao.x = -1; inimigo.inimigo.posicao.y = -1;}
-                            movimentoBoss(boss.boss.posicao.x, boss.boss.posicao.y);
+                        for (int i = 0; i < 3; i++) {
+                            resetarRevelarMapa(revelarMapa);
+                            criarMapa(mapa, i);
+                            while (jogador.jogador.vida > 0) {
+                                SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
                             
-                            if (projetil.ativo && lado != 0) {
-                                projetil.posicao.x += projetil.dx;
-                                projetil.posicao.y += projetil.dy;  
+                                // Movimentação dos Inimigos
+                                if (inimigo.inimigo.vida > 0) movimentoInimigo(inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y, mapa);
+                                else {inimigo.inimigo.posicao.x = -1; inimigo.inimigo.posicao.y = -1;}
+                                movimentoBoss(boss.boss.posicao.x, boss.boss.posicao.y);
+                                
+                                if (projetil.ativo && lado != 0) {
+                                    projetil.posicao.x += projetil.dx;
+                                    projetil.posicao.y += projetil.dy;  
 
-                                // Bate na parede
-                                if (mapa[projetil.posicao.x][projetil.posicao.y] == 1 || projetil.posicao.y >= TAM) {
-                                    projetil.ativo = false;
-                                    projetil.posicao.y = -1;
-                                    projetil.posicao.x = -1;
+                                    // Bate na parede
+                                    if (mapa[projetil.posicao.x][projetil.posicao.y] == 1 || projetil.posicao.y >= TAM) {
+                                        projetil.ativo = false;
+                                        projetil.posicao.y = -1;
+                                        projetil.posicao.x = -1;
+                                    }
+
+                                    // Bate no inimigo
+                                    if (projetil.posicao.x == inimigo.inimigo.posicao.x &&
+                                        projetil.posicao.y == inimigo.inimigo.posicao.y) {
+                                        inimigo.inimigo.vida -= projetil.dano;
+                                        projetil.ativo = false;
+                                        projetil.posicao.y = -1;
+                                        projetil.posicao.x = -1;
+                                    }
                                 }
 
-                                // Bate no inimigo
-                                if (projetil.posicao.x == inimigo.inimigo.posicao.x &&
-                                    projetil.posicao.y == inimigo.inimigo.posicao.y) {
-                                    inimigo.inimigo.vida -= projetil.dano;
-                                    projetil.ativo = false;
-                                    projetil.posicao.y = -1;
-                                    projetil.posicao.x = -1;
-                                }
+                                desenharMapa(revelarMapa, mapa,
+                                    jogador.jogador.posicao.x, jogador.jogador.posicao.y,
+                                    inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y,
+                                    boss.boss.posicao.x, boss.boss.posicao.y,
+                                    projetil.posicao.x, projetil.posicao.y, lado);
+
+                                movimentoJogador(mapa,
+                                    jogador.jogador.posicao.x, jogador.jogador.posicao.y,
+                                    jogador.jogador.vida,
+                                    inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y,
+                                    projetil.posicao.x, projetil.posicao.y, projetil.ativo, lado, projetil.dx, projetil.dy);
+                                hud(jogador.jogador.vida);
                             }
-
-                            desenharMapa(revelarMapa, mapa,
-                                jogador.jogador.posicao.x, jogador.jogador.posicao.y,
-                                inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y,
-                                boss.boss.posicao.x, boss.boss.posicao.y,
-                                projetil.posicao.x, projetil.posicao.y, lado);
-
-                            movimentoJogador(mapa,
-                                jogador.jogador.posicao.x, jogador.jogador.posicao.y,
-                                jogador.jogador.vida,
-                                inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y,
-                                projetil.posicao.x, projetil.posicao.y, projetil.ativo, lado, projetil.dx, projetil.dy);
-                            hud(jogador.jogador.vida);
-
                         }
-                        break;
                     case 1: comoJogar(); system("cls"); break;
                     case 2: itens(); system("cls"); break;
                     case 3: sistemaDePontuacao(); system("cls"); break;
