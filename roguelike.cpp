@@ -197,7 +197,7 @@ int main() {
                         resetarRevelarMapa(revelarMapa);
                         criarMapa(mapa, faseAtual);
                         
-                        while (jogador.jogador.vida > 0) {
+                        while (jogador.jogador.vida > 0 || boss.boss.vida > 0) {
                             SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
                         
                             // Movimentação dos Inimigos
