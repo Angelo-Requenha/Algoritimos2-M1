@@ -163,7 +163,7 @@ int main() {
 
     // Definir: "Posição", "Vida", "XP", "Dano"
     Jogador jogador {{{1, 1}, 3, 0, 1}};
-    Boss boss {{{20, 20}, 50, 100, 5}};
+    Boss boss {{{20, 20}, 1, 100, 5}};
     Inimigo inimigo {{{8, 9}, 5, 3, 1}};
     Projetil projetil = {{-1, -1}, 1, false, 0, 0};
     
@@ -209,14 +209,23 @@ int main() {
                                 }
                             }
                             
-                            if (faseAtual == 3  && boss.boss.vida > 0) {
-                                movimentoBoss(boss.boss.posicao.x, boss.boss.posicao.y, mapa);
-                            }
-                            
                             int bossX = -1, bossY = -1;
                             if (faseAtual == 3 && boss.boss.vida > 0) {
-                                bossX = boss.boss.posicao.x;
-                                bossY = boss.boss.posicao.y;
+                                 if (boss.boss.vida > 0) {
+                                    bossX = boss.boss.posicao.x;
+                                    bossY = boss.boss.posicao.y;
+                                    movimentoInimigo(boss.boss.posicao.x, boss.boss.posicao.y, mapa);
+                                } else {
+                                    system("cls");
+                                    cout << "╔════════════════════════════════════╗\n";
+                                    cout << "║    PARABÉNS! VOCÊ VENCEU O JOGO!   ║\n";
+                                    cout << "╚════════════════════════════════════╝\n";
+                                    system("pause");
+                                    break;
+                                    boss.boss.posicao.x = -1; boss.boss.posicao.y = -1;
+                                }
+                                inimigo.inimigo.posicao.x = -1;
+                                inimigo.inimigo.posicao.y = -1;
                             } 
 
                             if (projetil.ativo && lado != 0) {
@@ -238,22 +247,26 @@ int main() {
                                     projetil.posicao.y = -1;
                                     projetil.posicao.x = -1;
                                 }
+
+                                if (projetil.posicao.x == boss.boss.posicao.x &&
+                                    projetil.posicao.y == boss.boss.posicao.y) {
+                                    boss.boss.vida -= projetil.dano;
+                                    projetil.ativo = false;
+                                    projetil.posicao.y = -1;
+                                    projetil.posicao.x = -1;
+                                }
                             }
                             
                             desenharMapa(revelarMapa, mapa,
                                 jogador.jogador.posicao.x, jogador.jogador.posicao.y,
-
                                 inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y,
-                                
                                 bossX, bossY,
                                 projetil.posicao.x, projetil.posicao.y, lado);
 
                             movimentoJogador(mapa,
                                 jogador.jogador.posicao.x, jogador.jogador.posicao.y,
                                 jogador.jogador.vida,
-
                                 inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y,
-
                                 projetil.posicao.x, projetil.posicao.y, projetil.ativo, lado, projetil.dx, projetil.dy, mudarFase);
 
                             hud(jogador.jogador.vida);
@@ -268,7 +281,7 @@ int main() {
                                     cout << "║    PARABÉNS! VOCÊ VENCEU O JOGO!   ║\n";
                                     cout << "╚════════════════════════════════════╝\n";
                                     system("pause");
-                                    break; // Sai do loop de jogo e volta ao menu
+                                    break;
                                 }
 
                                 // Criar novo mapa para a próxima fase
