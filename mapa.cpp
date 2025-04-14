@@ -202,7 +202,7 @@ void criarMapa(int mapa[TAM][TAM]) {
     }
 }
 
-void desenharMapa(bool revelaMapa[TAM][TAM], int mapa[TAM][TAM], int x, int y, int ix, int iy, int bx, int by, int projetil_x, int projetil_y) {
+void desenharMapa(bool revelaMapa[TAM][TAM], int mapa[TAM][TAM], int x, int y, int ix, int iy, int bx, int by, int projetil_x, int projetil_y, int lado) {
     sorteioMapa = rand() % 2;
 
     for (int i = 0; i < TAM; i++) {
@@ -211,12 +211,16 @@ void desenharMapa(bool revelaMapa[TAM][TAM], int mapa[TAM][TAM], int x, int y, i
                 revelaMapa[i][j] = true;
             }
             
-            if (i == x && j == y) cout << "$$"; // Jogador
-            else if (i == projetil_x && j == projetil_y) cout << "**"; // Projetil
-            else if (i == bx && j == by) cout << "∑∑"; // Boss
-            else if (i == ix && j == iy) cout << "%%"; // Inimigo
+            if (lado == 1 && i + 1 == x && j == y) cout<<" ▲";
+            else if (lado == 2 && i - 1 == x && j == y) cout<<" ▼";
+            else if (lado == 3 && i == x && j + 1 == y) cout<<" ◄";
+            else if (lado == 4 && i == x && j - 1 == y) cout<<"► ";
+            else if (i == x && j == y) cout << "$$"; // Jogador
+            else if (i == projetil_x && j == projetil_y) cout << " ●"; // Projetil
+            else if (i == bx && j == by && revelaMapa[i][j] == true) cout << "∑∑"; // Boss
+            else if (i == ix && j == iy && revelaMapa[i][j] == true) cout << "%%"; // Inimigo
             else if (!revelaMapa[i][j]) cout << " -"; // Parte não revelada
-            else cout << (mapa[i][j] == 1 ? "██" : "  "); // Parede ou espaço vazio
+            else cout << (mapa[i][j] == 1 ? "██" : "  "); // Parede ou espaço vazio 
         }
         cout << endl;
     }

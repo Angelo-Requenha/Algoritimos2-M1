@@ -189,7 +189,6 @@ int main() {
 
                         while (jogador.jogador.vida > 0) {
                             SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-                            hud(jogador.jogador.vida);
 
                             // Movimentação dos Inimigos
                             if (inimigo.inimigo.vida > 0) movimentoInimigo(inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y, mapa);
@@ -201,8 +200,7 @@ int main() {
                                 projetil.posicao.y += projetil.dy;  
 
                                 // Bate na parede
-                                if (mapa[projetil.posicao.x][projetil.posicao.y] == 1 ||
-                                    projetil.posicao.y >= TAM) {
+                                if (mapa[projetil.posicao.x][projetil.posicao.y] == 1 || projetil.posicao.y >= TAM) {
                                     projetil.ativo = false;
                                     projetil.posicao.y = -1;
                                     projetil.posicao.x = -1;
@@ -222,13 +220,14 @@ int main() {
                                 jogador.jogador.posicao.x, jogador.jogador.posicao.y,
                                 inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y,
                                 boss.boss.posicao.x, boss.boss.posicao.y,
-                                projetil.posicao.x, projetil.posicao.y);
+                                projetil.posicao.x, projetil.posicao.y, lado);
 
                             movimentoJogador(mapa,
                                 jogador.jogador.posicao.x, jogador.jogador.posicao.y,
                                 jogador.jogador.vida,
                                 inimigo.inimigo.posicao.x, inimigo.inimigo.posicao.y,
                                 projetil.posicao.x, projetil.posicao.y, projetil.ativo, lado, projetil.dx, projetil.dy);
+                            hud(jogador.jogador.vida);
 
                         }
                         break;
